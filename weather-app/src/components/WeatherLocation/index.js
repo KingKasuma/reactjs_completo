@@ -1,29 +1,10 @@
 import React, { Component } from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import transformWeather from './../../services/transformWeather'
+import { api_weather } from './../../constants/api_url';
 import Location from './Location';
 import WeatherData from './WeatherData';
 import './styles.css';
-import {
-    CLOUD,
-    CLOUDY,
-    SUN,
-    RAIN,
-    SNOW,
-    WINDY,
-} from '../../constants/weathers';
-
-const data = {
-    temperature: 5,
-    weatherState: SUN,
-    humidity: 10,
-    wind: '10 m/s'
-}
-
-const data2 = {
-    temperature: 15,
-    weatherState: WINDY,
-    humidity: 20,
-    wind: '10 m/s'
-}
 
 //const WeatherLocation = () => (
 //    <div className="weatherLocationCont">
@@ -43,23 +24,52 @@ class WeatherLocation extends Component {
         super();
         this.state = {
             city: 'Buenos Aires',
-            data: data
+            data: null
         };
+        console.log("constructor");
+    }
+    
+    componentDidMount() {
+        console.log("componentDidMount");
+        this.handleUpdateClick();
     }
 
-    handleUpdateClick = () => {        
-        this.setState({            
-            data: data2
-        })
+    componentDidUpdate(prevProps, prevState) {
+        console.log("componentDidUpdate");        
+    }
+
+    // componentWillMount() {
+    //     console.log("UNSAFE componentWillMount");
+    // }
+
+    // componentWillUpdate(nextProps, nextState) {
+    //     console.log("UNSAFE componentWillUpdate");
+    // }
+    
+    handleUpdateClick = () => {   
+        fetch(api_weather).then(resolve => {            
+            return resolve.json(); //resolve.json es una promesa
+        }).then(data => {
+            console.log("Resultado del hanndleUpdateClick");
+            const newWeather = transformWeather(data);
+            console.log(data);
+            //debugger;
+            this.setState({
+                data: newWeather
+            });
+        });        
     }
 
     render(){
+        console.log("render");
         const { city , data } = this.state;
         return (
             <div className="weatherLocationCont">
                 <Location city={city}></Location>
-                <WeatherData data={data}></WeatherData>
-                <button onClick={this.handleUpdateClick}>Actualizar</button>
+                {data ? 
+                    <WeatherData data={data}></WeatherData> : 
+                    <CircularProgress size={50}></CircularProgress>
+                }                
             </div>
         );
     }    
