@@ -8,11 +8,16 @@ const cities = [
   'Bogota, col',
   'Madrid, es',
   'Cochabamba, bo'
-]
+];
+
 function App() {
+
+  const handleSelectionLocation = city => {
+    console.log(`handleSelectionLocation ${city}`);
+  }
   return (
     <div className="App">      
-      <LocationList cities={cities}></LocationList>
+      <LocationList cities={cities} onSelectedLocation={handleSelectionLocation}></LocationList>
     </div>
   );
 }
